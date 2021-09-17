@@ -59,10 +59,20 @@ function draw() {
 function lossScreen() {
   background(0);
   textAlign(CENTER, BOTTOM);
-  textSize(100);
+  textSize(width/12);
   text("You Lost, but had a score of: " + score, 0, height/3, width);
   fill(255);
+  stroke(0);
+  fill(255);
   rect(resetX, resetY, resetWidth);
+  fill(100);
+  ellipse(width/2, resetY + resetWidth/2, resetWidth - resetWidth/8);
+  fill(255);
+  ellipse(width/2, resetY + resetWidth/2, resetWidth - resetWidth*0.6);
+  fill(100);
+  triangle(resetX + 0.6*resetWidth, resetY + resetWidth * 0.5, resetX + resetWidth*0.8, resetY + resetWidth*0.9, resetX + resetWidth, resetY + resetWidth * 0.5);
+  noStroke();
+  rect(resetX + resetWidth*0.7, resetY + resetWidth * 0.4, resetWidth* 0.22);
   if(mouseX >= resetX && mouseX <= resetX+resetWidth && mouseY >= resetY && mouseY <=           resetY+resetWidth && mouseIsPressed) {
     resetGame();
   }
@@ -181,6 +191,7 @@ function wasd() {
 
 function resetGame() {
   createCanvas(windowWidth, windowHeight);
+  stroke(0);
   x = width/2;
   y = height/2;
   if(width > height) {
