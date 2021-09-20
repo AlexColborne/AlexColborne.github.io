@@ -1,13 +1,13 @@
 // Interactive Scene
 // Alex Colborne
-// Date
+// Sept 24, 2021
 //
 // Extra for Experts:
-// - describe what you did to take this project "above and beyond"
+// - I explored what happened when the window was resized while the program was running, making sure that everything in the project will adjust to look and function normally regardless of the window size.
 
 
 let x, y, w, h, wallWidth, ballX, ballY, theta, speed, ballSpeedX, ballSpeedY, catchBuffer, lossTime,
-  lost, score, caught, bouncing, resetWidth, resetX, resetY, diameter;
+  lost, score, caught, bouncing, resetWidth, resetX, resetY, diameter, winW;
 
 function setup() {
   resetGame();
@@ -21,10 +21,8 @@ function windowResized() {
     wallWidth = height * 0.075;
     diameter = height * 0.03;
     speed = height * 0.0125;
-    ballSpeedX = height * 0.05;
-    ballSpeedY = height * 0.05;
     resetWidth = height * 0.2;
-    resetY = height * 0.75;
+    winW = true;
   }
   else {
     w = width * 0.1;
@@ -32,11 +30,12 @@ function windowResized() {
     wallWidth = width * 0.075;
     diameter = width * 0.03;
     speed = width * 0.0125;
-    ballSpeedX = width * 0.05;
-    ballSpeedY = width * 0.05;
     resetWidth = width * 0.2;
-    resetY = width * 0.75;
+    winW = false;
   }
+  resetY = height * 0.75;
+  ballSpeedX = width * 0.05;
+  ballSpeedY = height * 0.05;
   resetX = width/2 - resetWidth/2;
   textSize(wallWidth * 1.25);
 }
@@ -59,7 +58,12 @@ function draw() {
 function lossScreen() {
   background(0);
   textAlign(CENTER, BOTTOM);
-  textSize(width/12);
+  if(winW) {
+    textSize(height/6);
+  }
+  else {
+    textSize(width/6);
+  }
   text("You Lost, but had a score of: " + score, 0, height/3, width);
   fill(255);
   stroke(0);
@@ -200,10 +204,8 @@ function resetGame() {
     wallWidth = height * 0.075;
     diameter = height * 0.03;
     speed = height * 0.0125;
-    ballSpeedX = height * 0.05;
-    ballSpeedY = height * 0.05;
     resetWidth = height * 0.2;
-    resetY = height * 0.75;
+    winW = true;
   }
   else {
     w = width * 0.1;
@@ -211,11 +213,12 @@ function resetGame() {
     wallWidth = width * 0.075;
     diameter = width * 0.03;
     speed = width * 0.0125;
-    ballSpeedX = width * 0.05;
-    ballSpeedY = width * 0.05;
     resetWidth = width * 0.2;
-    resetY = width * 0.75;
+    winW = false;
   }
+  resetY = height * 0.75;
+  ballSpeedX = width * 0.05;
+  ballSpeedY = height * 0.05;
   ballX = x + w;
   ballY = y + 1/2 * h;
   resetX = width/2 - resetWidth/2;
