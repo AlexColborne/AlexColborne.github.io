@@ -12,7 +12,4 @@ function setup() {
 
 function draw() {
   background(220);
-  rect(mouseX, mouseY, 100, 50);
-  ellipse(100, 200, 10, 10);
 }
-
