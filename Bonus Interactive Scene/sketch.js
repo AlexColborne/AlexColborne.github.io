@@ -6,7 +6,10 @@
 // - describe what you did to take this project "above and beyond"
 
 let bulletArray = [];
+let enemyArray = [];
 let charX, charY, charW, charH, theta, side;
+let lastSpawn = 500;
+let spawnTimer = 1000;
 
 function setup() {
   createCanvas(windowWidth, windowHeight);
@@ -19,21 +22,42 @@ function draw() {
   background(220);
   displayChar();
   displayBullet();
-  spawnEnemy();
+  enemySpawner();
+  displayEnemy();
 }
 
-function spawnEnemy() {
+function enemySpawner() {
+  if(lastSpawn + spawnTimer < millis()) {
+    side = random(1, 5);
+    if(side === 1) {
+      spawnEnemy(random(width), 0); //Top
+    }
+    else if(side === 2) {
+      spawnEnemy(width, random(height));  //Right
+    }
+    else if(side === 3) {
+      spawnEnemy(random(width), height);  //Height
+    }
+    else if(side === 4) {
+      spawnEnemy(0, random(height));  //Left
+    }
+  }
+}
+
+function displayEnemy() {
+  for (let enemies of enemyArray) {
+    rect(enemies.x, enemies.y, enemies.w);
+  }
+}
+
+function spawnEnemy(xSpawn, ySpawn) {
   let enemy = {
-    x,
-    y,
+    x: xSpawn,
+    y: ySpawn,
     w: 80,
     speed: 5,
-    directon: atan2(y - charY, x - charX),
   };
-  side = random(1, 5);
-  if(side = 1) {
-    rect(random(width), )
-  }
+  enemyArray.push(enemy);
 }
 
 function mouseClicked() {
