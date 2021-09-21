@@ -10,11 +10,14 @@ let x, y, w, h, wallWidth, ballX, ballY, theta, speed, ballSpeedX, ballSpeedY, c
   lost, score, caught, bouncing, resetWidth, resetX, resetY, diameter, winW;
 
 function setup() {
+  //runs the function to restart the game as a setup
   resetGame();
 }
 
+//deals with all adjustements required when window is resized
 function windowResized() {
   resizeCanvas(windowWidth, windowHeight);
+  //adjustements if window is wide
   if(width > height) {
     w = height * 0.1;
     h = height * 0.13;
@@ -24,6 +27,7 @@ function windowResized() {
     resetWidth = height * 0.2;
     winW = true;
   }
+  //adjustements if window is tall
   else {
     w = width * 0.1;
     h = width * 0.13;
@@ -42,6 +46,7 @@ function windowResized() {
 
 function draw() {
   background(220);
+  //shows what to show when playing vs loss screen
   if(!lost) {
     displayGame();
     wasd();
@@ -57,6 +62,7 @@ function draw() {
 
 function lossScreen() {
   background(0);
+  //setting up text for loss screen
   textAlign(CENTER, BOTTOM);
   if(winW) {
     textSize(height/6);
@@ -65,6 +71,7 @@ function lossScreen() {
     textSize(width/6);
   }
   text("You Lost, but had a score of: " + score, 0, height/3, width);
+  //setting up restart button
   fill(255);
   stroke(0);
   fill(255);
@@ -102,17 +109,20 @@ function displayGame() {
   fill("orange");
   text(score, 0, 0);
   
+  //shows time before loss
   if(bouncing) {
     text(round((lossTime - millis())/1000, 2), width*0.8, 0);
   }
 }
 
+//checks if the player has lost the game
 function loss() {
   if(millis() > lossTime) {
     lost = true;
   }
 }
 
+//throws the ball in direction of mouse
 function mouseClicked() {
   if(!bouncing) {
     theta = atan2(mouseY - ballY , mouseX - ballX);
@@ -124,7 +134,9 @@ function mouseClicked() {
   }
 }
 
+//checks if the ball has been caught
 function caughtBall() {
+  //buffer on catch so that the ball can leave character
   if(millis() > catchBuffer) {
     if(bouncing) {
       caught = collideRectCircle(x, y, w, h, ballX, ballY, diameter);
@@ -133,6 +145,7 @@ function caughtBall() {
       }
     }
   }
+  //resets loss condition when ball is caught
   if(caught) {
     bouncing = false;
     ballX = x + w;
@@ -141,6 +154,7 @@ function caughtBall() {
   }
 }
 
+//moves ball
 function ballMovement() {
   if(bouncing) {
     ballX += cos(theta) * ballSpeedX;
@@ -193,6 +207,7 @@ function wasd() {
   }
 }
 
+//used as both setup and when restart button is pressed
 function resetGame() {
   createCanvas(windowWidth, windowHeight);
   stroke(0);
