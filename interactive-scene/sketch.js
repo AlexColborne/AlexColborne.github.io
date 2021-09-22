@@ -60,35 +60,6 @@ function draw() {
   }
 }
 
-function lossScreen() {
-  background(0);
-  //setting up text for loss screen
-  textAlign(CENTER, BOTTOM);
-  if(winW) {
-    textSize(height/6);
-  }
-  else {
-    textSize(width/6);
-  }
-  text("You Lost, but had a score of: " + score, 0, height/3, width);
-  //setting up restart button
-  fill(255);
-  stroke(0);
-  fill(255);
-  rect(resetX, resetY, resetWidth);
-  fill(100);
-  ellipse(width/2, resetY + resetWidth/2, resetWidth - resetWidth/8);
-  fill(255);
-  ellipse(width/2, resetY + resetWidth/2, resetWidth - resetWidth*0.6);
-  fill(100);
-  triangle(resetX + 0.6*resetWidth, resetY + resetWidth * 0.5, resetX + resetWidth*0.8, resetY + resetWidth*0.9, resetX + resetWidth, resetY + resetWidth * 0.5);
-  noStroke();
-  rect(resetX + resetWidth*0.7, resetY + resetWidth * 0.4, resetWidth* 0.22);
-  if(mouseX >= resetX && mouseX <= resetX+resetWidth && mouseY >= resetY && mouseY <=           resetY+resetWidth && mouseIsPressed) {
-    resetGame();
-  }
-}
-
 function displayGame() {
   //char
   fill(255);
@@ -115,10 +86,18 @@ function displayGame() {
   }
 }
 
-//checks if the player has lost the game
-function loss() {
-  if(millis() > lossTime) {
-    lost = true;
+function wasd() {
+  if(keyIsDown(87)) { //w
+    y -= speed;
+  }
+  if(keyIsDown(83)) { //s
+    y += speed;
+  }
+  if(keyIsDown(65)) { //a
+    x -= speed;
+  }
+  if(keyIsDown(68)) { //d
+    x += speed;
   }
 }
 
@@ -131,6 +110,14 @@ function mouseClicked() {
     catchBuffer = millis() + 100;
     ballSpeedX = Math.abs(ballSpeedX);
     ballSpeedY = Math.abs(ballSpeedY);
+  }
+}
+
+//moves ball
+function ballMovement() {
+  if(bouncing) {
+    ballX += cos(theta) * ballSpeedX;
+    ballY += sin(theta) * ballSpeedY;
   }
 }
 
@@ -148,17 +135,9 @@ function caughtBall() {
   //resets loss condition when ball is caught
   if(caught) {
     bouncing = false;
-    ballX = x + w;
+    ballX = x + w*0.75;
     ballY = y + 1/2 * h;
     lossTime = millis() + 3000;
-  }
-}
-
-//moves ball
-function ballMovement() {
-  if(bouncing) {
-    ballX += cos(theta) * ballSpeedX;
-    ballY += sin(theta) * ballSpeedY;
   }
 }
 
@@ -192,18 +171,39 @@ function walls() {
   }
 }
 
-function wasd() {
-  if(keyIsDown(87)) { //w
-    y -= speed;
+//checks if the player has lost the game
+function loss() {
+  if(millis() > lossTime) {
+    lost = true;
   }
-  if(keyIsDown(83)) { //s
-    y += speed;
+}
+
+function lossScreen() {
+  background(0);
+  //setting up text for loss screen
+  textAlign(CENTER, BOTTOM);
+  if(winW) {
+    textSize(height/6);
   }
-  if(keyIsDown(65)) { //a
-    x -= speed;
+  else {
+    textSize(width/6);
   }
-  if(keyIsDown(68)) { //d
-    x += speed;
+  text("You Lost, but had a score of: " + score, 0, height/3, width);
+  //setting up restart button
+  fill(255);
+  stroke(0);
+  fill(255);
+  rect(resetX, resetY, resetWidth);
+  fill(100);
+  ellipse(width/2, resetY + resetWidth/2, resetWidth - resetWidth/8);
+  fill(255);
+  ellipse(width/2, resetY + resetWidth/2, resetWidth - resetWidth*0.6);
+  fill(100);
+  triangle(resetX + 0.6*resetWidth, resetY + resetWidth * 0.5, resetX + resetWidth*0.8, resetY + resetWidth*0.9, resetX + resetWidth, resetY + resetWidth * 0.5);
+  noStroke();
+  rect(resetX + resetWidth*0.7, resetY + resetWidth * 0.4, resetWidth* 0.22);
+  if(mouseX >= resetX && mouseX <= resetX+resetWidth && mouseY >= resetY && mouseY <=           resetY+resetWidth && mouseIsPressed) {
+    resetGame();
   }
 }
 
@@ -246,3 +246,4 @@ function resetGame() {
   caught = true;
   bouncing = false;
 }
+
