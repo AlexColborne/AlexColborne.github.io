@@ -46,7 +46,7 @@ function windowResized() {
 
 function draw() {
   background(220);
-  //shows what to show when playing vs loss screen
+  //decides what to show when playing vs what to show after losing
   if(!lost) {
     displayGame();
     wasd();
@@ -86,6 +86,7 @@ function displayGame() {
   }
 }
 
+//2D movement of the character using WASD
 function wasd() {
   if(keyIsDown(87)) { //w
     y -= speed;
