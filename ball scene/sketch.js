@@ -16,8 +16,19 @@ function setup() {
 
 function draw() {
   background(220);
+
+  checkBall();
   moveBall();
   displayBall();
+}
+
+function checkBall() {
+  for(let i = ballArray.length-1; i >= 0; i--) {
+    let distance = dist(ballArray[i].x, ballArray[i].y, mouseX, mouseY);
+    if(distance < ballArray[i].diameter / 2) {
+      ballArray.splice(i, 1);
+    }
+  }
 }
 
 function mouseClicked() {
