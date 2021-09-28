@@ -37,13 +37,15 @@ function createRandomArray(size) {
 }
 
 function mousePressed() {
-  let cellX = Math.floor(mouseX/cellSize);
-  let cellY = Math.floor(mouseY/cellSize);
-  swap(cellX, cellY);
-  swap(cellX-1, cellY);
-  swap(cellX+1, cellY);
-  swap(cellX, cellY-1);
-  swap(cellX, cellY+1);
+  if(mouseX <= width && mouseY <= height) {
+    let cellX = Math.floor(mouseX/cellSize);
+    let cellY = Math.floor(mouseY/cellSize);
+    swap(cellX, cellY);
+    swap(cellX-1, cellY);
+    swap(cellX+1, cellY);
+    swap(cellX, cellY-1);
+    swap(cellX, cellY+1);
+  }
 }
 
 function swap(x, y) {
