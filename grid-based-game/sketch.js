@@ -19,7 +19,9 @@ function draw() {
   background(220);
   drawGrid();
   blockSpawner();
-  updateGrid();
+  if(frameCount % 10 === 0) {
+    gridFall();
+  }
 }
 
 function createEmptyGrid(gridHeight, gridWidth) {
@@ -43,20 +45,15 @@ function blockSpawner() {
   }
 }
 
-function updateGrid() {
-  let newArray = createEmptyGrid(20, 10);
+function gridFall() {
+  let newArray = grid;
   for(let y = 19; y > 0; y--) {
     for(let x = 9; x > 0; x--) {
-      if(grid[y][x] !== 0) {
-        if(y < 19) {
+      if(y+1 >= 0 && y+1 < 19) {
+        if(newArray[y][x] !== 0) {
           if(newArray[y+1][x] === 0) {
-            if(y + 1 < 19) {
-              newArray[y][x] = 0;
-              newArray[y+1][x] = 1;
-            }
-          }
-          else {
-            newArray[y][x] = grid[y][x];
+            newArray[y+1][x] = newArray[y][x];
+            newArray[y][x] = 0;
           }
         }
       }
