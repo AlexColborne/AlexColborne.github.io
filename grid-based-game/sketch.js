@@ -8,10 +8,12 @@
 let grid;
 let cellSize;
 let inControl = false;
+let gridHeight = 20;
+let gridWidth = 10;
 
 function setup() {
   createCanvas(windowWidth, windowHeight);
-  grid = createEmptyGrid(20, 10);
+  grid = createEmptyGrid();
   cellSize = height/20;
 }
 
@@ -19,12 +21,12 @@ function draw() {
   background(220);
   drawGrid();
   blockSpawner();
-  if(frameCount % 10 === 0) {
+  if(frameCount % 100 === 0) {
     gridFall();
   }
 }
 
-function createEmptyGrid(gridHeight, gridWidth) {
+function createEmptyGrid() {
   let gridArray = [];
   for(let y = 0; y < gridHeight; y++) {
     gridArray.push([]);
@@ -46,30 +48,34 @@ function blockSpawner() {
 }
 
 function gridFall() {
-  let newArray = grid;
-  for(let y = 19; y > 0; y--) {
-    for(let x = 9; x > 0; x--) {
-      if(y+1 >= 0 && y+1 < 19) {
-        if(newArray[y][x] !== 0) {
+  let newArray = [];
+  newArray = grid;
+  for(let y = gridHeight-1; y >= 0; y--) {
+    for(let x = gridWidth-1; x >= 0; x--) {
+      if(newArray[y][x] !== 0) {    
+        if(y < gridHeight-1) {
           if(newArray[y+1][x] === 0) {
             newArray[y+1][x] = newArray[y][x];
             newArray[y][x] = 0;
           }
-        }
+        }  
       }
     }
+  }
+  if(newArray === grid) {
+    inControl = false;
   }
   grid = newArray;
 }
 
 function drawGrid() {
-  for(let y = 0; y < 20; y++) {
-    for(let x = 0; x < 10; x++) {
+  for(let y = 0; y < gridHeight; y++) {
+    for(let x = 0; x < gridWidth; x++) {
       if(grid[y][x] === 0) {
         fill("white");
       }
       else if(grid[y][x] === 1) {
-        fill("yellow");
+        fill("red");
       }
       rect(x*cellSize + width/2 - cellSize * 5, y*cellSize, cellSize);
     }
