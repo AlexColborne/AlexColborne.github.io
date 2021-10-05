@@ -12,6 +12,7 @@ let gridHeight = 20;
 let gridWidth = 10;
 let controlCount = 0;
 let droppingGrid;
+let lockTime = 500;
 
 function setup() {
   createCanvas(windowWidth, windowHeight);
@@ -53,12 +54,24 @@ function blockSpawner() {
 
 function keyPressed() {
   if(keyCode === LEFT_ARROW) {
+    let gridLSideCheck = [];
+    for(let y = 0; y < gridHeight; y++) {
+      gridLSideCheck.push([]);
+      for(let x = 0; x < gridWidth; x++) {
+        gridLSideCheck[y].push(droppingGrid[y][x]);
+      }
+    }
     for(let y = 0; y < gridHeight; y++) { 
       for(let x = 0; x < gridWidth; x++) {
-        if(droppingGrid[y][x] !== 0) {
+        if(gridLSideCheck[y][x] !== 0) {
           if(x >= 1) {
-            droppingGrid[y][x-1] = droppingGrid[y][x];
-            droppingGrid[y][x] = 0;
+            if(staticGrid[y][x-1] === 0) {
+              gridLSideCheck[y][x-1] = gridLSideCheck[y][x];
+              gridLSideCheck[y][x] = 0;
+            }
+            else {
+              return;
+            }
           }
           else {
             return;
@@ -66,14 +79,28 @@ function keyPressed() {
         }
       }
     }
+    droppingGrid = gridLSideCheck;
   }
+
   if(keyCode === RIGHT_ARROW) {
-    for(let y = 0; y < gridHeight; y++) { 
+    let gridRSideCheck = [];
+    for(let y = 0; y < gridHeight; y++) {
+      gridRSideCheck.push([]);
       for(let x = 0; x < gridWidth; x++) {
-        if(droppingGrid[y][x] !== 0) {
-          if(x <= 9) {
-            droppingGrid[y][x+1] = droppingGrid[y][x];
-            //droppingGrid[y][x] = 0;
+        gridRSideCheck[y].push(droppingGrid[y][x]);
+      }
+    }
+    for(let y = gridHeight - 1; y >= 0; y--) { 
+      for(let x = gridWidth - 1; x >= 0; x--) {
+        if(gridRSideCheck[y][x] !== 0) {
+          if(x < gridWidth) {
+            if(staticGrid[y][x+1] === 0) {
+              gridRSideCheck[y][x+1] = gridRSideCheck[y][x];
+              gridRSideCheck[y][x] = 0;
+            }
+            else {
+              return;
+            }
           }
           else {
             return;
@@ -81,21 +108,57 @@ function keyPressed() {
         }
       }
     }
+    droppingGrid = gridRSideCheck;
+  }
+
+  if(keyCode === UP_ARROW) {
+    let gridRotateCheck = [];
+    for(let y = 0; y < droppingGrid.length; y++) {
+      gridRotateCheck.push([]);
+      for(let x = 0; x < droppingGrid[y].length; x++) {
+        gridRotateCheck[y].push(droppingGrid[y][x]);
+      }
+    }
+    let count = 0;
+    for(let y = 0; y < gridHeight; y++) {
+      for(let x = 0; x < gridWidth; x++) {
+        if(gridRotateCheck[y][x] === 1) {
+          if(x > 0 && x < 9 && y < 20 && y > 0) {
+            if(staticGrid[y-1][x] === 0 && staticGrid[y+1][x] === 0 && staticGrid[y][x-1] === 0 && staticGrid[y][x+1] === 0) {
+              count += gridRotateCheck[y-1][x];
+              count += gridRotateCheck[y+1][x];
+              count += gridRotateCheck[y][x-1];
+              count += gridRotateCheck[y][x+1];
+              console.log(count);
+              if(count === 3) {
+                gridRotateCheck[y-1][x] = droppingGrid[y][x-1];
+                gridRotateCheck[y+1][x] = droppingGrid[y][x+1];
+                gridRotateCheck[y][x-1] = droppingGrid[y+1][x];
+                gridRotateCheck[y][x+1] = droppingGrid[y-1][x];
+              }
+              else {
+                count = 0;
+              }
+            }
+          }
+        }
+        else {
+          count = 0;
+        }
+      }
+    }
+    droppingGrid = gridRotateCheck;
   }
 }
 
 function gridFall() {
-  let gridDropCheck = [...droppingGrid];
-  let backupArray = [];
-  for(let y = gridHeight-1; y >= 0; y--) {
-    backupArray.push[droppingGrid[y]];
-    for(let x = gridWidth-1; x >= 0; x--) {
-      backupArray.push[droppingGrid[y][x]];
+  let gridDropCheck = [];
+  for(let y = 0; y < gridHeight; y++) {
+    gridDropCheck.push([]);
+    for(let x = 0; x < gridWidth; x++) {
+      gridDropCheck[y].push(droppingGrid[y][x]);
     }
   }
-
-
-
   for(let y = gridHeight-1; y >= 0; y--) {
     for(let x = gridWidth-1; x >= 0; x--) {
       if(gridDropCheck[y][x] !== 0) {    
@@ -119,8 +182,8 @@ function gridFall() {
         else {
           for(let y2 = 0; y2 < gridHeight; y2++) { 
             for(let x2 = 0; x2 < gridWidth; x2++) {
-              if(backupArray[y2][x2] !== 0) {
-                staticGrid[y2][x2] = backupArray[y2][x2];
+              if(droppingGrid[y2][x2] !== 0) {
+                staticGrid[y2][x2] = droppingGrid[y2][x2];
               }
             }
           }
@@ -130,6 +193,7 @@ function gridFall() {
       }
     }
   }
+  droppingGrid = gridDropCheck;
 }
 
 function drawGrid() {
