@@ -13,6 +13,8 @@ let gridWidth = 10;
 let controlCount = 0;
 let droppingGrid;
 let lockTime = 500;
+let block;
+let state = 1;
 
 function setup() {
   createCanvas(windowWidth, windowHeight);
@@ -71,20 +73,32 @@ function createEmptyGrid() {
 
 function blockSpawner() {
   if(!inControl) {
-    let block = int(random(1, 3));
-    console.log(block);
+    block = int(random(1, 5));
     droppingGrid = createEmptyGrid();
-    if(block === 1) {
+    if(block === 1) { //T Block
       droppingGrid[0][4] = 1;
       droppingGrid[0][5] = 1;
       droppingGrid[0][6] = 1;
       droppingGrid[1][5] = 1;
     }
-    if(block === 2) {
+    if(block === 2) { //O Block
       droppingGrid[0][4] = 2;
       droppingGrid[0][5] = 2;
       droppingGrid[1][4] = 2;
       droppingGrid[1][5] = 2;
+    }
+    if(block === 3) { //I Block
+      droppingGrid[0][3] = 3;
+      droppingGrid[0][4] = 3;
+      droppingGrid[0][5] = 3;
+      droppingGrid[0][6] = 3;
+      state = 1;
+    }
+    if(block === 4) { //J Block
+      droppingGrid[0][4] = 4;
+      droppingGrid[0][5] = 4;
+      droppingGrid[0][6] = 4;
+      droppingGrid[1][6] = 4;
     }
     inControl = true;
   }
@@ -166,31 +180,100 @@ function keyPressed() {
       }
     }
     let count = 0;
-    for(let y = 0; y < gridHeight; y++) {
-      for(let x = 0; x < gridWidth; x++) {
-        if(gridRotateCheck[y][x] === 1) {
-          if(x > 0 && x < 9 && y < 19 && y > 0) {
-            if(staticGrid[y-1][x] === 0 && staticGrid[y+1][x] === 0 && staticGrid[y][x-1] === 0 && staticGrid[y][x+1] === 0) {
-              count += gridRotateCheck[y-1][x];
-              count += gridRotateCheck[y+1][x];
-              count += gridRotateCheck[y][x-1];
-              count += gridRotateCheck[y][x+1];
-              if(count === 3) {
-                gridRotateCheck[y-1][x] = droppingGrid[y][x-1];
-                gridRotateCheck[y+1][x] = droppingGrid[y][x+1];
-                gridRotateCheck[y][x-1] = droppingGrid[y+1][x];
-                gridRotateCheck[y][x+1] = droppingGrid[y-1][x];
-              }
-              else {
-                count = 0;
+
+    //Rotating T-Block
+    if(block === 1) {
+      for(let y = 0; y < gridHeight; y++) {
+        for(let x = 0; x < gridWidth; x++) {
+          if(gridRotateCheck[y][x] === 1) {
+            if(x > 0 && x < 9 && y < 19 && y > 0) {
+              if(staticGrid[y-1][x] === 0 && staticGrid[y+1][x] === 0 && staticGrid[y][x-1] === 0 && staticGrid[y][x+1] === 0) {
+                count += gridRotateCheck[y-1][x];
+                count += gridRotateCheck[y+1][x];
+                count += gridRotateCheck[y][x-1];
+                count += gridRotateCheck[y][x+1];
+                if(count === 3) {
+                  gridRotateCheck[y-1][x] = droppingGrid[y][x-1];
+                  gridRotateCheck[y+1][x] = droppingGrid[y][x+1];
+                  gridRotateCheck[y][x-1] = droppingGrid[y+1][x];
+                  gridRotateCheck[y][x+1] = droppingGrid[y-1][x];
+                }
+                else {
+                  count = 0;
+                }
               }
             }
           }
-        }
-        else {
-          count = 0;
+          else {
+            count = 0;
+          }
         }
       }
+    }
+    //Rotating I-Block
+    if(block === 3) {
+      for(let y = 0; y < gridHeight; y++) {
+        for(let x = 0; x < gridWidth; x++) {
+          if(gridRotateCheck[y][x] === 3) {
+            if(state === 1) {
+              if(y > 0 && y < 8) {
+                gridRotateCheck[y-1][x+2] = 3;
+                gridRotateCheck[y+1][x+2] = 3;
+                gridRotateCheck[y+2][x+2] = 3;
+  
+                gridRotateCheck[y][x] = 0;
+                gridRotateCheck[y][x+1] = 0;
+                gridRotateCheck[y][x+3] = 0;
+                state = 2;
+                droppingGrid = gridRotateCheck;
+                return;
+              }
+            }
+            else if(state === 2) {
+              gridRotateCheck[y+2][x-2] = 3;
+              gridRotateCheck[y+2][x-1] = 3;
+              gridRotateCheck[y+2][x+1] = 3;
+
+              gridRotateCheck[y][x] = 0;
+              gridRotateCheck[y+1][x] = 0;
+              gridRotateCheck[y+3][x] = 0;
+
+              state = 3;
+              droppingGrid = gridRotateCheck;
+              return;
+            }
+            else if(state === 3) {
+              gridRotateCheck[y-2][x+1] = 3;
+              gridRotateCheck[y-1][x+1] = 3;
+              gridRotateCheck[y+1][x+1] = 3;
+
+              gridRotateCheck[y][x] = 0;
+              gridRotateCheck[y][x+2] = 0;
+              gridRotateCheck[y][x+3] = 0;
+
+              state = 4;
+              droppingGrid = gridRotateCheck;
+              return;
+            }
+            else if(state === 4) {
+              gridRotateCheck[y+1][x-1] = 3;
+              gridRotateCheck[y+1][x+1] = 3;
+              gridRotateCheck[y+1][x+2] = 3;
+
+              gridRotateCheck[y][x] = 0;
+              gridRotateCheck[y+2][x] = 0;
+              gridRotateCheck[y+3][x] = 0;
+
+              state = 1;
+              droppingGrid = gridRotateCheck;
+              return;
+            }
+          }
+        }
+      }
+    }
+    if(block === 4) {
+      //J
     }
     droppingGrid = gridRotateCheck;
   }
@@ -245,13 +328,19 @@ function drawGrid() {
   for(let y = 0; y < gridHeight; y++) {
     for(let x = 0; x < gridWidth; x++) {
       if(staticGrid[y][x] === 1 || droppingGrid[y][x] === 1) {
-        fill("purple");
+        fill(128, 0, 128);
       }
       else if(staticGrid[y][x] === 2 || droppingGrid[y][x] === 2) {
-        fill("yellow");
+        fill(255, 255, 0);
+      }
+      else if(staticGrid[y][x] === 3 || droppingGrid[y][x] === 3) {
+        fill(0, 255, 255);
+      }
+      else if(staticGrid[y][x] === 4 || droppingGrid[y][x] === 4) {
+        fill(0, 0, 255);
       }
       else if(staticGrid[y][x] === 0) {
-        fill("white");
+        fill(127, 127, 127);
       }
       rect(x*cellSize + width/2 - cellSize * 5, y*cellSize, cellSize);
     }
