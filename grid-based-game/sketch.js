@@ -216,7 +216,7 @@ function keyPressed() {
         for(let x = 0; x < gridWidth; x++) {
           if(gridRotateCheck[y][x] === 3) {
             if(state === 1) {
-              if(y > 0 && y < 8) {
+              if(y > 0 && y < gridHeight - 2 && staticGrid[y-1][x+2] === 0 && staticGrid[y+1][x+2] === 0 && staticGrid[y+2][x+2] === 0) {
                 gridRotateCheck[y-1][x+2] = 3;
                 gridRotateCheck[y+1][x+2] = 3;
                 gridRotateCheck[y+2][x+2] = 3;
@@ -230,17 +230,19 @@ function keyPressed() {
               }
             }
             else if(state === 2) {
-              gridRotateCheck[y+2][x-2] = 3;
-              gridRotateCheck[y+2][x-1] = 3;
-              gridRotateCheck[y+2][x+1] = 3;
-
-              gridRotateCheck[y][x] = 0;
-              gridRotateCheck[y+1][x] = 0;
-              gridRotateCheck[y+3][x] = 0;
-
-              state = 3;
-              droppingGrid = gridRotateCheck;
-              return;
+              if(y < gridHeight - 2) {
+                gridRotateCheck[y+2][x-2] = 3;
+                gridRotateCheck[y+2][x-1] = 3;
+                gridRotateCheck[y+2][x+1] = 3;
+  
+                gridRotateCheck[y][x] = 0;
+                gridRotateCheck[y+1][x] = 0;
+                gridRotateCheck[y+3][x] = 0;
+  
+                state = 3;
+                droppingGrid = gridRotateCheck;
+                return;
+              }
             }
             else if(state === 3) {
               gridRotateCheck[y-2][x+1] = 3;
