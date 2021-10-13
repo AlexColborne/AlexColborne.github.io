@@ -8,7 +8,7 @@
 let staticGrid;
 let cellSize;
 let inControl = false;
-let gridHeight = 20;
+let gridHeight = 22;
 let gridWidth = 10;
 let controlCount = 0;
 let droppingGrid;
@@ -20,7 +20,7 @@ function setup() {
   createCanvas(windowWidth, windowHeight);
   staticGrid = createEmptyGrid();
   droppingGrid = createEmptyGrid();
-  cellSize = height/20;
+  cellSize = height/gridHeight;
 }
 
 function draw() {
@@ -73,7 +73,7 @@ function createEmptyGrid() {
 
 function blockSpawner() {
   if(!inControl) {
-    block = int(random(1, 4));
+    block = int(random(1, 8));
     droppingGrid = createEmptyGrid();
     if(block === 1) { //T Block
       droppingGrid[0][4] = 1;
@@ -94,19 +94,41 @@ function blockSpawner() {
       droppingGrid[0][6] = 3;
       state = 1;
     }
-    // if(block === 4) { //J Block
-    //   droppingGrid[0][4] = 4;
-    //   droppingGrid[0][5] = 4;
-    //   droppingGrid[0][6] = 4;
-    //   droppingGrid[1][6] = 4;
-    // }
+    if(block === 4) { //J Block
+      droppingGrid[0][4] = 4;
+      droppingGrid[0][5] = 4;
+      droppingGrid[0][6] = 4;
+      droppingGrid[1][6] = 4;
+      state = 1;
+    }
+    if(block === 5) { //L Block
+      droppingGrid[0][4] = 5;
+      droppingGrid[0][5] = 5;
+      droppingGrid[0][6] = 5;
+      droppingGrid[1][4] = 5;
+      state = 1;
+    }
+    if(block === 6) { //S Block
+      droppingGrid[0][5] = 6;
+      droppingGrid[0][6] = 6;
+      droppingGrid[1][5] = 6;
+      droppingGrid[1][4] = 6;
+      state = 1;
+    }
+    if(block === 7) { //S Block
+      droppingGrid[0][4] = 7;
+      droppingGrid[0][5] = 7;
+      droppingGrid[1][5] = 7;
+      droppingGrid[1][6] = 7;
+      state = 1;
+    }
     inControl = true;
   }
 }
 
 function drop() {
-  if(keyIsDown(32)) {
-    if(frameCount % 4 === 0) {
+  if(keyIsDown(40)) {
+    if(frameCount % 3 === 0) {
       gridFall();
     }
   }
@@ -233,7 +255,7 @@ function keyPressed() {
               }
             }
             else if(state === 2) {
-              if(y < gridHeight - 2 && x > 1 && x < gridWidth - 1 && gridRotateCheck[y+2][x-2] === 0 && gridRotateCheck[y+2][x-1] === 0 && gridRotateCheck[y+2][x+1] === 0) {
+              if(y < gridHeight - 2 && x > 1 && x < gridWidth - 1 && staticGrid[y+2][x-2] === 0 && staticGrid[y+2][x-1] === 0 && staticGrid[y+2][x+1] === 0) {
                 gridRotateCheck[y+2][x-2] = 3;
                 gridRotateCheck[y+2][x-1] = 3;
                 gridRotateCheck[y+2][x+1] = 3;
@@ -251,7 +273,7 @@ function keyPressed() {
               }
             }
             else if(state === 3) {
-              if(y < gridHeight - 2 && y > 1 && x < gridWidth - 1 && gridRotateCheck[y-2][x+1] === 0 && gridRotateCheck[y-1][x+1] === 0 && gridRotateCheck[y+1][x+1] === 0) {
+              if(y < gridHeight - 2 && y > 1 && x < gridWidth - 1 && staticGrid[y-2][x+1] === 0 && staticGrid[y-1][x+1] === 0 && staticGrid[y+1][x+1] === 0) {
                 gridRotateCheck[y-2][x+1] = 3;
                 gridRotateCheck[y-1][x+1] = 3;
                 gridRotateCheck[y+1][x+1] = 3;
@@ -269,7 +291,7 @@ function keyPressed() {
               }
             }
             else if(state === 4) {
-              if(y < gridHeight - 1 && x < gridWidth - 2 && x > 0 && gridRotateCheck[y+1][x-1] === 0 && gridRotateCheck[y+1][x+1] === 0 && gridRotateCheck[y+1][x+2] === 0) {
+              if(y < gridHeight - 1 && x < gridWidth - 2 && x > 0 && staticGrid[y+1][x-1] === 0 && staticGrid[y+1][x+1] === 0 && staticGrid[y+1][x+2] === 0) {
                 gridRotateCheck[y+1][x-1] = 3;
                 gridRotateCheck[y+1][x+1] = 3;
                 gridRotateCheck[y+1][x+2] = 3;
@@ -290,8 +312,300 @@ function keyPressed() {
         }
       }
     }
+    //Rotating J-Block
     if(block === 4) {
-      //J
+      for(let y = 0; y < gridHeight; y++) {
+        for(let x = 0; x < gridWidth; x++) {
+          if(gridRotateCheck[y][x] === 4) {
+            if(state === 1) {
+              if(y < gridHeight - 1 && y > 0 && x < gridWidth - 1 && staticGrid[y-1][x+1] === 0 && staticGrid[y+1][x+1] === 0 && staticGrid[y+1][x] === 0) {
+                gridRotateCheck[y-1][x+1] = 4;
+                gridRotateCheck[y+1][x+1] = 4;
+                gridRotateCheck[y+1][x] = 4;
+  
+                gridRotateCheck[y][x] = 0;
+                gridRotateCheck[y][x+2] = 0;
+                gridRotateCheck[y+1][x+2] = 0;
+                state = 2;
+                droppingGrid = gridRotateCheck;
+                return;
+              }
+              else {
+                return;
+              }
+            }
+            if(state === 2) {
+              if(y < gridHeight - 1 && x > 0 && x < gridWidth - 1 && staticGrid[y][x-1] === 0 && staticGrid[y+1][x-1] === 0 && staticGrid[y+1][x+1] === 0) {
+                gridRotateCheck[y][x-1] = 4;
+                gridRotateCheck[y+1][x-1] = 4;
+                gridRotateCheck[y+1][x+1] = 4;
+  
+                gridRotateCheck[y][x] = 0;
+                gridRotateCheck[y+2][x] = 0;
+                gridRotateCheck[y+2][x-1] = 0;
+                state = 3;
+                droppingGrid = gridRotateCheck;
+                return;
+              }
+              else {
+                return;
+              }
+            }
+            if(state === 3) {
+              if(y < gridHeight - 2 && x < gridWidth - 2 && staticGrid[y][x+1] === 0 && staticGrid[y][x+2] === 0 && staticGrid[y+2][x+1] === 0) {
+                gridRotateCheck[y][x+1] = 4;
+                gridRotateCheck[y][x+2] = 4;
+                gridRotateCheck[y+2][x+1] = 4;
+  
+                gridRotateCheck[y][x] = 0;
+                gridRotateCheck[y+1][x] = 0;
+                gridRotateCheck[y+1][x+2] = 0;
+                state = 4;
+                droppingGrid = gridRotateCheck;
+                return;
+              }
+              else {
+                return;
+              }
+            }
+            if(state === 4) {
+              if(y < gridHeight - 1 && y > 0 && x < gridWidth - 1 && staticGrid[y+1][x-1] === 0 && staticGrid[y+1][x+1] === 0 && staticGrid[y+2][x+1] === 0) {
+                gridRotateCheck[y+1][x-1] = 4;
+                gridRotateCheck[y+1][x+1] = 4;
+                gridRotateCheck[y+2][x+1] = 4;
+  
+                gridRotateCheck[y][x] = 0;
+                gridRotateCheck[y][x+1] = 0;
+                gridRotateCheck[y+2][x] = 0;
+                state = 1;
+                droppingGrid = gridRotateCheck;
+                return;
+              }
+              else {
+                return;
+              }
+            }
+          }
+        }
+      }
+    }
+
+    //rotates L-Block
+    if(block === 5) {
+      for(let y = 0; y < gridHeight; y++) {
+        for(let x = 0; x < gridWidth; x++) {
+          if(gridRotateCheck[y][x] === 5) {
+            if(state === 1) {
+              if(y < gridHeight - 1 && y > 0 && x < gridWidth - 1 && staticGrid[y-1][x] === 0 && staticGrid[y-1][x+1] === 0 && staticGrid[y+1][x+1] === 0) {
+                gridRotateCheck[y-1][x] = 5;
+                gridRotateCheck[y-1][x+1] = 5;
+                gridRotateCheck[y+1][x+1] = 5;
+  
+                gridRotateCheck[y][x] = 0;
+                gridRotateCheck[y+1][x] = 0;
+                gridRotateCheck[y][x+2] = 0;
+                state = 2;
+                droppingGrid = gridRotateCheck;
+                return;
+              }
+              else {
+                return;
+              }
+            }
+            if(state === 2) {
+              if(y < gridHeight - 1 && x < gridWidth - 2 && staticGrid[y+1][x] === 0 && staticGrid[y][x+2] === 0 && staticGrid[y+1][x+2] === 0) {
+                gridRotateCheck[y+1][x] = 5;
+                gridRotateCheck[y][x+2] = 5;
+                gridRotateCheck[y+1][x+2] = 5;
+  
+                gridRotateCheck[y][x] = 0;
+                gridRotateCheck[y][x+1] = 0;
+                gridRotateCheck[y+2][x+1] = 0;
+                state = 3;
+                droppingGrid = gridRotateCheck;
+                return;
+              }
+              else {
+                return;
+              }
+            }
+            if(state === 3) {
+              if(y < gridHeight - 2 && x > 0 && staticGrid[y][x-1] === 0 && staticGrid[y+2][x] === 0 && staticGrid[y+2][x-1] === 0) {
+                gridRotateCheck[y][x-1] = 5;
+                gridRotateCheck[y+2][x] = 5;
+                gridRotateCheck[y+2][x-1] = 5;
+  
+                gridRotateCheck[y][x] = 0;
+                gridRotateCheck[y+1][x] = 0;
+                gridRotateCheck[y+1][x-2] = 0;
+                state = 4;
+                droppingGrid = gridRotateCheck;
+                return;
+              }
+              else {
+                return;
+              }
+            }
+            if(state === 4) {
+              if(y < gridHeight - 2 && x > 0 && x < gridWidth - 1 && staticGrid[y+1][x+1] === 0 && staticGrid[y+1][x-1] === 0 && staticGrid[y+2][x-1] === 0) {
+                gridRotateCheck[y+1][x+1] = 5;
+                gridRotateCheck[y+1][x-1] = 5;
+                gridRotateCheck[y+2][x-1] = 5;
+  
+                gridRotateCheck[y][x] = 0;
+                gridRotateCheck[y+2][x] = 0;
+                gridRotateCheck[y+2][x+1] = 0;
+                state = 1;
+                droppingGrid = gridRotateCheck;
+                return;
+              }
+              else {
+                return;
+              }
+            }
+          }
+        }
+      }
+    }
+
+    //rotates S-Block
+    if(block === 6) {
+      for(let y = 0; y < gridHeight; y++) {
+        for(let x = 0; x < gridWidth; x++) {
+          if(gridRotateCheck[y][x] === 6) {
+            if(state === 1) {
+              if(y < gridHeight - 2 && x < gridWidth - 1 && staticGrid[y+1][x+1] === 0 && staticGrid[y+2][x+1] === 0) {
+                gridRotateCheck[y+1][x+1] = 6;
+                gridRotateCheck[y+2][x+1] = 6;
+  
+                gridRotateCheck[y][x+1] = 0;
+                gridRotateCheck[y+1][x-1] = 0;
+                state = 2;
+                droppingGrid = gridRotateCheck;
+                return;
+              }
+              else {
+                return;
+              }
+            }
+            if(state === 2) {
+              if(y < gridHeight - 2 && x > 0 && staticGrid[y+2][x] === 0 && staticGrid[y+2][x-1] === 0) {
+                gridRotateCheck[y+2][x] = 6;
+                gridRotateCheck[y+2][x-1] = 6;
+  
+                gridRotateCheck[y][x] = 0;
+                gridRotateCheck[y+2][x+1] = 0;
+                state = 3;
+                droppingGrid = gridRotateCheck;
+                return;
+              }
+              else {
+                return;
+              }
+            }
+            if(state === 3) {
+              if(y > 0 && x > 0 && staticGrid[y-1][x-1] === 0 && staticGrid[y][x-1] === 0) {
+                gridRotateCheck[y-1][x-1] = 6;
+                gridRotateCheck[y][x-1] = 6;
+  
+                gridRotateCheck[y+1][x-1] = 0;
+                gridRotateCheck[y][x+1] = 0;
+                state = 4;
+                droppingGrid = gridRotateCheck;
+                return;
+              }
+              else {
+                return;
+              }
+            }
+            if(state === 4) {
+              if(x < gridWidth - 2 && staticGrid[y][x+1] === 0 && staticGrid[y][x+2] === 0) {
+                gridRotateCheck[y][x+1] = 6;
+                gridRotateCheck[y][x+2] = 6;
+  
+                gridRotateCheck[y][x] = 0;
+                gridRotateCheck[y+2][x+1] = 0;
+                state = 1;
+                droppingGrid = gridRotateCheck;
+                return;
+              }
+              else {
+                return;
+              }
+            }
+          }
+        }
+      }
+    }
+
+    //rotates Z-Block
+    if(block === 7) {
+      for(let y = 0; y < gridHeight; y++) {
+        for(let x = 0; x < gridWidth; x++) {
+          if(gridRotateCheck[y][x] === 7) {
+            if(state === 1) {
+              if(y < gridHeight - 2 && x < gridWidth - 2 && staticGrid[y][x+2] === 0 && staticGrid[y+2][x+1] === 0) {
+                gridRotateCheck[y][x+2] = 7;
+                gridRotateCheck[y+2][x+1] = 7;
+  
+                gridRotateCheck[y][x] = 0;
+                gridRotateCheck[y][x+1] = 0;
+                state = 2;
+                droppingGrid = gridRotateCheck;
+                return;
+              }
+              else {
+                return;
+              }
+            }
+            if(state === 2) {
+              if(y < gridHeight - 2 && x < gridWidth - 2 && staticGrid[y+1][x-2] === 0 && staticGrid[y+2][x] === 0) {
+                gridRotateCheck[y+1][x-2] = 7;
+                gridRotateCheck[y+2][x] = 7;
+  
+                gridRotateCheck[y][x] = 0;
+                gridRotateCheck[y+1][x] = 0;
+                state = 3;
+                droppingGrid = gridRotateCheck;
+                return;
+              }
+              else {
+                return;
+              }
+            }
+            if(state === 3) {
+              if(y < gridHeight - 1 && y > 0 && x < gridWidth - 1 && staticGrid[y-1][x+1] === 0 && staticGrid[y+1][x] === 0) {
+                gridRotateCheck[y-1][x+1] = 7;
+                gridRotateCheck[y+1][x] = 7;
+  
+                gridRotateCheck[y+1][x+2] = 0;
+                gridRotateCheck[y+1][x+1] = 0;
+                state = 4;
+                droppingGrid = gridRotateCheck;
+                return;
+              }
+              else {
+                return;
+              }
+            }
+            if(state === 4) {
+              if(y < gridHeight - 1 && x < gridWidth - 1 && x > 0 && staticGrid[y][x-1] === 0 && staticGrid[y+1][x+1] === 0) {
+                gridRotateCheck[y][x-1] = 7;
+                gridRotateCheck[y+1][x+1] = 7;
+  
+                gridRotateCheck[y+1][x-1] = 0;
+                gridRotateCheck[y+2][x-1] = 0;
+                state = 1;
+                droppingGrid = gridRotateCheck;
+                return;
+              }
+              else {
+                return;
+              }
+            }
+          }
+        }
+      }
     }
     droppingGrid = gridRotateCheck;
   }
@@ -356,6 +670,15 @@ function drawGrid() {
       }
       else if(staticGrid[y][x] === 4 || droppingGrid[y][x] === 4) {
         fill(0, 0, 255);
+      }
+      else if(staticGrid[y][x] === 5 || droppingGrid[y][x] === 5) {
+        fill(255, 127, 0);
+      }
+      else if(staticGrid[y][x] === 6 || droppingGrid[y][x] === 6) {
+        fill(0, 255, 0);
+      }
+      else if(staticGrid[y][x] === 7 || droppingGrid[y][x] === 7) {
+        fill(255, 0, 0);
       }
       else if(staticGrid[y][x] === 0) {
         fill(127, 127, 127);
