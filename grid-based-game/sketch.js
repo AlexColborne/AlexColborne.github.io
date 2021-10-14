@@ -15,6 +15,8 @@ let droppingGrid;
 let lockTime = 500;
 let block;
 let state = 1;
+let lose = false;
+let linesCleared = 0;
 
 function setup() {
   createCanvas(windowWidth, windowHeight);
@@ -24,13 +26,48 @@ function setup() {
 }
 
 function draw() {
-  background(220);
+  background("white");
   drawGrid();
-  blockSpawner();
-  if(frameCount % 20 === 0) {
-    gridFall();
+  loseCheck();
+  if(!lose) {
+    blockSpawner();
+    if(frameCount % 20 === 0) {
+      gridFall();
+    }
+    drop();
+    displayScore();
   }
-  drop();
+  else {
+    lossScreen();
+  }
+}
+
+function displayScore() {
+  textSize(cellSize * 1);
+  fill("red");
+  textAlign(CENTER, CENTER);
+  text(linesCleared, width/2 + cellSize * 6, cellSize);
+}
+
+function loseCheck() {
+  for(let x = 0; x < gridWidth; x++) {
+    if(staticGrid[1][x] !== 0) {
+      lose = true;
+    }
+  }
+}
+
+function lossScreen() {
+  fill("red");
+  textSize(cellSize * 3);
+  textStyle(BOLD);
+  textAlign(CENTER, CENTER);
+  stroke("black");
+  strokeWeight(cellSize / 5);
+  text("You Lost!", width/2, height/3);
+  textSize(cellSize * 1.5);
+  text("You Cleared " + linesCleared + " Lines!", width/2, height * 2/3);
+  strokeWeight(2);
 }
 
 function clearLineCheck() {
@@ -58,6 +95,7 @@ function clearLine(destroyY) {
       staticGrid[y][x] = staticGrid[y-1][x];
     }
   }
+  linesCleared ++;
 }
 
 function createEmptyGrid() {
@@ -683,7 +721,10 @@ function drawGrid() {
       else if(staticGrid[y][x] === 0) {
         fill(127, 127, 127);
       }
-      rect(x*cellSize + width/2 - cellSize * 5, y*cellSize, cellSize);
+      rect(x*cellSize + width/2 - cellSize * gridWidth/2, y*cellSize, cellSize);
     }
   }
+  strokeWeight(10);
+  line(width/2 - cellSize * gridWidth/2, cellSize * 2 , width/2 + cellSize * gridWidth/2, cellSize*2);
+  strokeWeight(2);
 }
