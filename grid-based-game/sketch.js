@@ -5,24 +5,43 @@
 // Extra for Experts:
 // - describe what you did to take this project "above and beyond"
 
-let staticGrid;
-let cellSize;
+let staticGrid, cellSize, droppingGrid, block, state, lose, linesCleared, resetColor, tetriminoClick, clearSound, bgSong;
 let inControl = false;
 let gridHeight = 22;
 let gridWidth = 10;
-let controlCount = 0;
-let droppingGrid;
-let lockTime = 500;
-let block;
-let state = 1;
-let lose = false;
-let linesCleared = 0;
 
-function setup() {
+function preload() {
+  tetriminoClick = loadSound("assets/klick11.flac");
+  clearSound = loadSound("assets/flaunch.wav");
+  bgSong = loadSound("assets/australisfrontier.mp3");
+}
+
+function setup() { 
   createCanvas(windowWidth, windowHeight);
   staticGrid = createEmptyGrid();
   droppingGrid = createEmptyGrid();
-  cellSize = height/gridHeight;
+  state = 1;
+  lose = false;
+  inControl = false;
+  linesCleared = 0;
+  resetColor = color(220);
+  if(height/gridHeight <= width/12) {
+    cellSize = height/gridHeight;
+  }
+  else {
+    cellSize = width/14;
+  }
+  bgSong.loop();
+}
+
+function windowResized() {
+  resizeCanvas(windowWidth, windowHeight);
+  if(height/gridHeight <= width/12) {
+    cellSize = height/gridHeight;
+  }
+  else {
+    cellSize = width/14;
+  }
 }
 
 function draw() {
@@ -53,21 +72,48 @@ function loseCheck() {
   for(let x = 0; x < gridWidth; x++) {
     if(staticGrid[1][x] !== 0) {
       lose = true;
+      bgSong.stop();
     }
   }
 }
 
 function lossScreen() {
-  fill("red");
+  //loss text
+  fill("black");
   textSize(cellSize * 3);
   textStyle(BOLD);
   textAlign(CENTER, CENTER);
-  stroke("black");
-  strokeWeight(cellSize / 5);
-  text("You Lost!", width/2, height/3);
+  stroke("white");
+  strokeWeight(cellSize / 10);
+  text("You Lost!", width/2, height/4);
   textSize(cellSize * 1.5);
-  text("You Cleared " + linesCleared + " Lines!", width/2, height * 2/3);
+  text("You Cleared " + linesCleared + " Lines!", width/2, height / 2);
+
+  //reset button
+  stroke("black");
+  rectMode(CENTER);
+  fill(resetColor);
+  rect(width/2, height * 3/4, cellSize * 9, cellSize * 3);
+  fill("black");
+  text("R E S E T", width/2, height * 3/4 + 10);
+  rectMode(CORNER);
   strokeWeight(2);
+
+  //hover the button
+  if(mouseX >= width/2 - cellSize * 4.5 && mouseX <= width/2 + cellSize * 4.5 && mouseY >= height * 3/4 - cellSize * 3/2 && mouseY <= height * 3/4 + cellSize * 3/2) {
+    resetColor = color(220);
+  }
+  else {
+    resetColor = color(180);
+  }
+}
+
+function mousePressed() {
+  if(lose) {
+    if(mouseX >= width/2 - cellSize * 4.5 && mouseX <= width/2 + cellSize * 4.5 && mouseY >= height * 3/4 - cellSize * 3/2 && mouseY <= height * 3/4 + cellSize * 3/2) {
+      setup();
+    }
+  }
 }
 
 function clearLineCheck() {
@@ -95,6 +141,7 @@ function clearLine(destroyY) {
       staticGrid[y][x] = staticGrid[y-1][x];
     }
   }
+  clearSound.play();
   linesCleared ++;
 }
 
@@ -673,6 +720,7 @@ function gridFall() {
                 }
               }
             }
+            tetriminoClick.play();
             clearLineCheck();
             return;
           } 
@@ -685,6 +733,7 @@ function gridFall() {
               }
             }
           }
+          tetriminoClick.play();
           clearLineCheck();
           return;
         } 
